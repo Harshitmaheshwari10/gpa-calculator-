@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Manipal University GPA Calculator</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+      background-image: url('your-background-image.jpg');
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+      color: #333;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(255, 255, 255, 0.85);
+      z-index: -1;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 30px;
+      animation: fadeIn 1s ease-out;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      background-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    table:hover {
+      transform: translateY(-3px);
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 12px;
+      text-align: left;
+      transition: background-color 0.3s ease;
+    }
+    tr:hover td {
+      background-color: #f5f9fd;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    input:focus {
+      border-color: #3498db;
+      box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
+      outline: none;
+    }
+    select {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: white;
+      transition: all 0.3s ease;
+    }
+    button {
+      background: #3498db;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      margin: 5px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    button:hover {
+      background: #2980b9;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    button.remove {
+      background: #e74c3c;
+      padding: 8px 12px;
+    }
+    button.remove:hover {
+      background: #c0392b;
+    }
+    .grade-col { width: 120px; }
+    .points-col { width: 80px; }
+    .type-col { width: 100px; }
+    .action-col { width: 90px; }
+    #results {
+      margin-top: 20px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s ease-out;
+    }
+    .non-graded { background-color: rgba(245, 245, 245, 0.8); }
+    .lab { background-color: rgba(230, 247, 255, 0.8); }
+    .button-group {
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .designer {
+      margin-top: 30px;
+      text-align: center;
+      font-style: italic;
+      color: #7f8c8d;
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1> Manipal University GPA Calculator</h1>
+  
+  <div class="button-group">
+    <button id="addGradedSubject">+ Add Graded Subject</button>
+    <button id="addNonGradedSubject">+ Add Non-Graded Subject</button>
+    <button id="addLabSubject">+ Add Lab (1 Credit)</button>
+  </div>
+  
+  <table id="inputTable">
+    <thead>
+      <tr>
+        <th>Subject</th>
+        <th>Credits</th>
+        <th>Type</th>
+        <th>Internals (/30)</th>
+        <th>MTE (/30)</th>
+        <th>ETE (/40)</th>
+        <th class="grade-col">Grade (Optional)</th>
+        <th class="points-col">Points</th>
+        <th class="action-col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><input type="text" placeholder="e.g., Math"></td>
+        <td><input type="number" min="1" value="4"></td>
+        <td>Graded</td>
+        <td><input type="number" min="0" max="30" value="0"></td>
+        <td><input type="number" min="0" max="30" value="0"></td>
+        <td><input type="number" min="0" max="40" value="0"></td>
+        <td>
+          <select class="grade-select">
+            <option value="">Auto</option>
+            <option value="A+">A+ (10)</option>
+            <option value="A">A (9)</option>
+            <option value="B">B (8)</option>
+            <option value="C">C (7)</option>
+            <option value="D">D (6)</option>
+            <option value="F">F (0)</option>
+          </select>
+        </td>
+        <td class="points-cell">-</td>
+        <td><button class="remove">Remove</button></td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <button id="calculate">Calculate GPA</button>
+  
+  <div id="results"></div>
+  
+  <div class="designer">Designed by Harshit Maheshwari</div>
+
+  <script>
+    // Grade to points mapping
+    const gradePoints = {
+      'A+': 10, 'A': 9, 'B': 8, 'C': 7, 'D': 6, 'F': 0
+    };
+
+    // Add new graded subject row
+    document.getElementById('addGradedSubject').addEventListener('click', function() {
+      const tbody = document.querySelector('#inputTable tbody');
+      const newRow = document.createElement('tr');
+      
+      newRow.innerHTML = `
+        <td><input type="text" placeholder="e.g., Physics"></td>
+        <td><input type="number" min="1" value="4"></td>
+        <td>Graded</td>
+        <td><input type="number" min="0" max="30" value="0"></td>
+        <td><input type="number" min="0" max="30" value="0"></td>
+        <td><input type="number" min="0" max="40" value="0"></td>
+        <td>
+          <select class="grade-select">
+            <option value="">Auto</option>
+            <option value="A+">A+ (10)</option>
+            <option value="A">A (9)</option>
+            <option value="B">B (8)</option>
+            <option value="C">C (7)</option>
+            <option value="D">D (6)</option>
+            <option value="F">F (0)</option>
+          </select>
+        </td>
+        <td class="points-cell">-</td>
+        <td><button class="remove">Remove</button></td>
+      `;
+      
+      tbody.appendChild(newRow);
+      
+      // Add animation
+      newRow.style.opacity = '0';
+      setTimeout(() => {
+        newRow.style.transition = 'opacity 0.3s ease';
+        newRow.style.opacity = '1';
+      }, 10);
+      
+      // Add event listener to the new remove button
+      newRow.querySelector('.remove').addEventListener('click', function() {
+        this.closest('tr').style.opacity = '0';
+        setTimeout(() => {
+          this.closest('tr').remove();
+        }, 300);
+      });
+    });
+
+    // Add new non-graded subject row
+    document.getElementById('addNonGradedSubject').addEventListener('click', function() {
+      const tbody = document.querySelector('#inputTable tbody');
+      const newRow = document.createElement('tr');
+      newRow.classList.add('non-graded');
+      
+      newRow.innerHTML = `
+        <td><input type="text" placeholder="e.g., Workshop"></td>
+        <td><input type="number" min="1" value="2"></td>
+        <td>Non-Graded</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td class="points-cell">0</td>
+        <td><button class="remove">Remove</button></td>
+      `;
+      
+      tbody.appendChild(newRow);
+      
+      // Add animation
+      newRow.style.opacity = '0';
+      setTimeout(() => {
+        newRow.style.transition = 'opacity 0.3s ease';
+        newRow.style.opacity = '1';
+      }, 10);
+      
+      // Add event listener to the new remove button
+      newRow.querySelector('.remove').addEventListener('click', function() {
+        this.closest('tr').style.opacity = '0';
+        setTimeout(() => {
+          this.closest('tr').remove();
+        }, 300);
+      });
+    });
+
+    // Add new lab subject row
+    document.getElementById('addLabSubject').addEventListener('click', function() {
+      const tbody = document.querySelector('#inputTable tbody');
+      const newRow = document.createElement('tr');
+      newRow.classList.add('lab');
+      
+      newRow.innerHTML = `
+        <td><input type="text" placeholder="e.g., Chemistry Lab"></td>
+        <td><input type="number" min="1" value="1" readonly></td>
+        <td>Lab</td>
+        <td><input type="number" min="0" max="30" value="0"></td>
+        <td><input type="number" min="0" max="30" value="0"></td>
+        <td><input type="number" min="0" max="40" value="0"></td>
+        <td>
+          <select class="grade-select">
+            <option value="">Auto</option>
+            <option value="A+">A+ (10)</option>
+            <option value="A">A (9)</option>
+            <option value="B">B (8)</option>
+            <option value="C">C (7)</option>
+            <option value="D">D (6)</option>
+            <option value="F">F (0)</option>
+          </select>
+        </td>
+        <td class="points-cell">-</td>
+        <td><button class="remove">Remove</button></td>
+      `;
+      
+      tbody.appendChild(newRow);
+      
+      // Add animation
+      newRow.style.opacity = '0';
+      setTimeout(() => {
+        newRow.style.transition = 'opacity 0.3s ease';
+        newRow.style.opacity = '1';
+      }, 10);
+      
+      // Add event listener to the new remove button
+      newRow.querySelector('.remove').addEventListener('click', function() {
+        this.closest('tr').style.opacity = '0';
+        setTimeout(() => {
+          this.closest('tr').remove();
+        }, 300);
+      });
+    });
+
+    // Calculate GPA
+    document.getElementById('calculate').addEventListener('click', function() {
+      try {
+        const rows = document.querySelectorAll('#inputTable tbody tr');
+        if (rows.length === 0) {
+          document.getElementById('results').innerHTML = '<p>Please add at least one subject</p>';
+          return;
+        }
+
+        let totalCredits = 0;
+        let totalWeightedPoints = 0;
+        let resultsHtml = '<h2>Results</h2><table><tr><th>Subject</th><th>Type</th><th>Credits</th><th>Total</th><th>Grade</th><th>Points</th></tr>';
+
+        rows.forEach(row => {
+          const subject = row.querySelector('input[type="text"]')?.value || 'Unnamed';
+          const credits = parseFloat(row.querySelector('td:nth-child(2) input').value);
+          const type = row.querySelector('td:nth-child(3)').textContent;
+          
+          totalCredits += credits;
+
+          if (type === 'Non-Graded') {
+            row.querySelector('.points-cell').textContent = '0';
+            resultsHtml += `<tr><td>${subject}</td><td>${type}</td><td>${credits}</td><td>-</td><td>-</td><td>0</td></tr>`;
+          } else {
+            const internal = parseFloat(row.querySelector('td:nth-child(4) input').value) || 0;
+            const mte = parseFloat(row.querySelector('td:nth-child(5) input').value) || 0;
+            const ete = parseFloat(row.querySelector('td:nth-child(6) input').value) || 0;
+            const manualGrade = row.querySelector('.grade-select')?.value;
+            
+            const totalMarks = internal + mte + ete;
+            let grade, points;
+
+            if (manualGrade) {
+              grade = manualGrade;
+              points = gradePoints[manualGrade];
+            } else {
+              if (totalMarks >= 85) { grade = 'A+'; }
+              else if (totalMarks >= 75) { grade = 'A'; }
+              else if (totalMarks >= 65) { grade = 'B'; }
+              else if (totalMarks >= 55) { grade = 'C'; }
+              else if (totalMarks >= 45) { grade = 'D'; }
+              else { grade = 'F'; }
+              points = gradePoints[grade];
+            }
+
+            row.querySelector('.points-cell').textContent = points;
+            totalWeightedPoints += credits * points;
+            resultsHtml += `<tr><td>${subject}</td><td>${type}</td><td>${credits}</td><td>${totalMarks}</td><td>${grade}</td><td>${points}</td></tr>`;
+          }
+        });
+
+        const gpa = totalCredits > 0 ? (totalWeightedPoints / totalCredits) : 0;
+        resultsHtml += `</table><p><strong>Total Credits: ${totalCredits}</strong></p>`;
+        resultsHtml += `<p><strong>GPA: ${gpa.toFixed(2)}</strong></p>`;
+        
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.style.opacity = '0';
+        resultsDiv.innerHTML = resultsHtml;
+        setTimeout(() => {
+          resultsDiv.style.transition = 'opacity 0.3s ease';
+          resultsDiv.style.opacity = '1';
+        }, 10);
+      } catch (error) {
+        document.getElementById('results').innerHTML = `<p style="color:red">Error: ${error.message}</p>`;
+      }
+    });
+
+    // Add event listener to initial remove button
+    document.querySelector('.remove').addEventListener('click', function() {
+      this.closest('tr').style.opacity = '0';
+      setTimeout(() => {
+        this.closest('tr').remove();
+      }, 300);
+    });
+  </script>
+</body>
+</html>
